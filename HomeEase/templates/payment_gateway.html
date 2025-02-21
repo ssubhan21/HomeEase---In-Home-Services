@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function showSuccessAlert() {
+            alert("Payment successful! Redirecting to your dashboard...");
+            document.getElementById("paymentForm").submit();
+        }
+
+        function togglePaymentFields() {
+            let method = document.getElementById("payment_method").value;
+            let cardFields = document.getElementById("cardFields");
+            let upiField = document.getElementById("upiField");
+            let cvvDiv = document.getElementById("cvvDiv");
+
+            if (method === "Credit Card" || method === "Debit Card") {
+                cardFields.style.display = "block";
+                upiField.style.display = "none";
+                cvvDiv.style.display = "block";
+            } else if (method === "UPI") {
+                cardFields.style.display = "none";
+                upiField.style.display = "block";
+                cvvDiv.style.display = "none";
+            } else {
+                cardFields.style.display = "none";
+                upiField.style.display = "none";
+                cvvDiv.style.display = "none";
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: url('/static/images/payment-bg.jpg') no-repeat center center/cover;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .payment-container {
+            max-width: 500px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        }
+        .form-label {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .form-control {
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .btn {
+            font-size: 16px;
+            padding: 12px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-tools"></i> HomeEase</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link btn btn-danger text-white" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="payment-container">
+            <h2 class="text-center"><i class="fas fa-credit-card"></i> Secure Payment Gateway</h2>
+            <p class="text-center">Total Amount: <strong>${{ amount }}</strong></p>
+
+            <form id="paymentForm" method="POST" action="{{ url_for('complete_payment', booking_id=booking_id, payment_method=payment_method) }}">
+                <input type="hidden" name="payment_method" id="payment_method" value="{{ payment_method }}">
+                
+                <!-- Card Payment Fields -->
+                <div id="cardFields" class="mb-3" style="display: none;">
+                    <label class="form-label">Card Number:</label>
+                    <input type="text" name="card_number" class="form-control" placeholder="Enter Card Number" required>
+
+                    <label class="form-label mt-2">Card Expiry Date:</label>
+                    <input type="text" name="expiry_date" class="form-control" placeholder="MM/YY" required>
+
+                    <div id="cvvDiv" class="mb-3" style="display: none;">
+                        <label class="form-label">CVV:</label>
+                        <input type="password" name="cvv" class="form-control" placeholder="Enter CVV" required>
+                    </div>
+                </div>
+
+                <!-- UPI Payment Field -->
+                <div id="upiField" class="mb-3" style="display: none;">
+                    <label class="form-label">UPI ID:</label>
+                    <input type="text" name="upi_id" class="form-control" placeholder="Enter UPI ID" required>
+                </div>
+
+                <button type="button" class="btn btn-success w-100" onclick="showSuccessAlert()"><i class="fas fa-arrow-right"></i> Complete Payment</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel & Return</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        togglePaymentFields();
+        document.getElementById("payment_method").addEventListener("change", togglePaymentFields);
+    </script>
+</body>
+</html>

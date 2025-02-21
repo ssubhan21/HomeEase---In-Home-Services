@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: url('/static/images/sp.jpg') no-repeat center center/cover;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .dashboard-container {
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-icons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .dashboard-icons a {
+            text-decoration: none;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            width: 150px;
+        }
+        .dashboard-icons a i {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .services-icon { background-color: #007bff; }
+        .bookings-icon { background-color: #28a745; }
+        .payments-icon { background-color: #ffc107; }
+        .logout-icon { background-color: #dc3545; }
+
+        @media (max-width: 768px) {
+            .dashboard-icons a {
+                width: 120px;
+                font-size: 14px;
+            }
+            .dashboard-icons a i {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-tools"></i> HomeEase</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link btn btn-danger text-white" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 dashboard-container">
+        <h2 class="text-center"><i class="fas fa-user-cog"></i> Provider Dashboard</h2>
+        
+        <div class="dashboard-icons">
+            <a href="#add_service" class="services-icon"><i class="fas fa-plus-circle"></i> Add Service</a>
+            <a href="#your_services" class="bookings-icon"><i class="fas fa-clipboard-list"></i> Your Services</a>
+            <a href="#manage_bookings" class="payments-icon"><i class="fas fa-calendar-check"></i> Manage Bookings</a>
+            <a href="#payments" class="logout-icon"><i class="fas fa-wallet"></i> Payments</a>
+        </div>
+
+        <h3 id="add_service"><i class="fas fa-plus-circle"></i> Add Service</h3>
+        <form method="POST" action="{{ url_for('add_service') }}">
+            <label>Service Name:</label>
+            <input type="text" name="service_name" class="form-control" required>
+            <label>Description:</label>
+            <input type="text" name="description" class="form-control" required>
+            <label>Price:</label>
+            <input type="number" name="price" class="form-control" required>
+            <button type="submit" class="btn btn-primary mt-2">Add Service</button>
+        </form>
+
+        <h3 id="your_services"><i class="fas fa-clipboard-list"></i> Your Services</h3>
+        <table class="table table-striped">
+            <tr>
+                <th>Service Name</th>
+                <th>Price</th>
+                <th>Availability</th>
+                <th>Action</th>
+            </tr>
+            {% for service in services %}
+            <tr>
+                <td>{{ service.service_name }}</td>
+                <td>${{ service.price }}</td>
+                <td>{{ service.availability }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('update_availability', service_id=service.service_id) }}">
+                        <select name="availability" class="form-control">
+                            <option value="Available">Available</option>
+                            <option value="Unavailable">Unavailable</option>
+                        </select>
+                        <button type="submit" class="btn btn-warning btn-sm mt-1">Update</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h3 id="manage_bookings"><i class="fas fa-calendar-check"></i> Manage Bookings</h3>
+        <table class="table table-bordered">
+            <tr>
+                <th>Booking ID</th>
+                <th>Service</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.booking_id }}</td>
+                <td>{{ booking.service_id }}</td>
+                <td>{{ booking.status }}</td>
+                <td>
+                    {% if booking.status == 'Pending' %}
+                    <a href="{{ url_for('update_booking_status', booking_id=booking.booking_id, status='Accepted') }}" class="btn btn-success btn-sm">Accept</a>
+                    <a href="{{ url_for('update_booking_status', booking_id=booking.booking_id, status='Rejected') }}" class="btn btn-danger btn-sm">Reject</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h3 id="payments"><i class="fas fa-wallet"></i> Payments</h3>
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Booking ID</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.payment_id }}</td>
+                    <td>{{ payment.booking_id }}</td>
+                    <td>${{ payment.amount }}</td>
+                    <td><span class="badge bg-{% if payment.payment_status == 'Pending' %}warning{% elif payment.payment_status == 'Completed' %}success{% elif payment.payment_status == 'Failed' %}danger{% endif %}">{{ payment.payment_status }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+</html>
