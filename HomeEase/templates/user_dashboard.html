@@ -86,7 +86,8 @@
             <thead class="table-dark">
                 <tr>
                     <th>Service Name</th>
-                    <th>Provider</th>
+                    <th>Provider Name</th>
+                    <th>Description</th>
                     <th>Price</th>
                     <th>Action</th>
                 </tr>
@@ -95,7 +96,8 @@
                 {% for service in services %}
                 <tr>
                     <td>{{ service.service_name }}</td>
-                    <td><i class="fas fa-briefcase provider-icon"></i> {{ service.provider_id }}</td>
+                    <td><i class="fas fa-briefcase provider-icon"></i> {{ service.provider_full_name }}</td>
+                    <td>{{service.description}}</td>
                     <td>${{ service.price }}</td>
                     <td>
                         <form method="POST" action="{{ url_for('book_service', service_id=service.service_id) }}">

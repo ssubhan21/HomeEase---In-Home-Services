@@ -56,6 +56,7 @@
     </style>
 </head>
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#"><i class="fas fa-tools"></i> HomeEase</a>
@@ -80,22 +81,41 @@
             <a href="#payments" class="logout-icon"><i class="fas fa-wallet"></i> Payments</a>
         </div>
 
+
+
         <h3 id="add_service"><i class="fas fa-plus-circle"></i> Add Service</h3>
-        <form method="POST" action="{{ url_for('add_service') }}">
-            <label>Service Name:</label>
-            <input type="text" name="service_name" class="form-control" required>
-            <label>Description:</label>
-            <input type="text" name="description" class="form-control" required>
-            <label>Price:</label>
-            <input type="number" name="price" class="form-control" required>
-            <button type="submit" class="btn btn-primary mt-2">Add Service</button>
-        </form>
+<form method="POST" action="{{ url_for('add_service') }}">
+    <div class="mb-3">
+        <label>Service Name:</label>
+        <select name="service_name" class="form-control" required>
+            <option value="Carpenter">Carpenter</option>
+            <option value="Plumbing">Plumbing</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Description:</label>
+        <input type="text" name="description" class="form-control" required>
+        <small class="form-text text-muted">
+            Please list all the specific jobs you can perform under the selected service category (e.g., for Plumbing: pipe repair, faucet installation).
+        </small>
+    </div>
+
+    <div class="mb-3">
+        <label>Price:</label>
+        <input type="number" name="price" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Service</button>
+</form>
+
 
         <h3 id="your_services"><i class="fas fa-clipboard-list"></i> Your Services</h3>
         <table class="table table-striped">
             <tr>
                 <th>Service Name</th>
                 <th>Price</th>
+                <th>Description</th>
                 <th>Availability</th>
                 <th>Action</th>
             </tr>
@@ -103,6 +123,7 @@
             <tr>
                 <td>{{ service.service_name }}</td>
                 <td>${{ service.price }}</td>
+                <td>{{ service.description }}</td>
                 <td>{{ service.availability }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('update_availability', service_id=service.service_id) }}">
