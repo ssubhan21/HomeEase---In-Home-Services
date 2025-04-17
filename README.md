@@ -65,7 +65,7 @@ cd HomeEase
   - Username: `admin`
   - Password: password
 
----
+------
 
 ## Troubleshooting
 
